@@ -9,14 +9,14 @@ ul {
 html,
 body {
 	font: 13px/20px Arial, sans-serif;
-	background: #EDEDED;
+	background: #0066cc;
 }
 
 #m {
 	max-width: 750px;
 	margin: 30px auto 10px;
 	border: solid 1px #BABABA;
-	background: #FFF;
+	background: #ffffff;
 	border-radius: 7px;
 	box-shadow: 0 0 10px #D2D1D1;
 }
@@ -54,7 +54,7 @@ h1 {
 
 #f {
 	text-align: center;
-	color: #969393;
+	color: #ffffff;
 }
 
 form,
