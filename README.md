@@ -1,5 +1,13 @@
 You will also like to see https://github.com/lgs2007m/cdt-gpt-ipq60xx-generate
 
+## build env
+
+OS: ubuntu 18.04
+
+```bash
+sudo bash -c  "apt update && apt install git python build-essential device-tree-compiler -y"
+```
+
 ## uboot build 
 u-boot-2016 source code base on https://github.com/gl-inet/uboot-ipq60xx
 
