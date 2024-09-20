@@ -29,20 +29,15 @@ jobs:
       run: |
         ./build.sh
 
-    - name: 查看编译输出
-      working-directory: ./uboot
-      run: |
-        ls -l ./u-boot-2016/
-
     - name: 设置 Release 标签和名称
       run: |
-        TAG_NAME=$(date +"%Y.%m.%d-%H.%M")  # 生成合法的 Git 标签格式
+        TAG_NAME=$(date +"%Y.%m.%d-%H.%M")
         echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
         echo "RELEASE_NAME=AX1800Pro-Uboot $TAG_NAME" >> $GITHUB_ENV
 
     - name: 创建 Release
       id: create_release
-      uses: actions/create-release@v1
+      uses: actions/create-release@v1.1.0  # 更新到最新版本
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
@@ -52,21 +47,21 @@ jobs:
         prerelease: false
 
     - name: 上传固件到 Release
-      uses: actions/upload-release-asset@v1
+      uses: actions/upload-release-asset@v1.1.0  # 更新到最新版本
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./uboot/u-boot-2016/u-boot.bin  # 确保路径正确
+        asset_path: ./uboot/u-boot-2016/u-boot.bin
         asset_name: u-boot.bin
         asset_content_type: application/octet-stream
 
     - name: 上传 MBN 文件到 Release
-      uses: actions/upload-release-asset@v1
+      uses: actions/upload-release-asset@v1.1.0  # 更新到最新版本
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./uboot/u-boot.mbn  # 确保路径正确
+        asset_path: ./uboot/u-boot.mbn
         asset_name: u-boot.mbn
         asset_content_type: application/octet-stream
