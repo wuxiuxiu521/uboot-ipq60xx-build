@@ -35,6 +35,7 @@ jobs:
         # find . -name "u-boot.*"
         find . -name "u-boot.bin"
         find . -name "u-boot.mbn"
+        ll
 
     # 动态生成当前日期时间作为 Release 的标签和名称
     - name: 设置 Release 标签和名称
@@ -63,16 +64,17 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./u-boot-2016/u-boot.bin
+        # asset_path: ./u-boot-2016/u-boot.bin
+        asset_path: ./u-boot.bin
         asset_name: u-boot.bin
         asset_content_type: application/octet-stream
 
-    - name: 上传 MBN 文件到 Release
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./u-boot.mbn
-        asset_name: u-boot.mbn
-        asset_content_type: application/octet-stream
+    # - name: 上传 MBN 文件到 Release
+    #   uses: actions/upload-release-asset@v1
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #   with:
+    #     upload_url: ${{ steps.create_release.outputs.upload_url }}
+    #     asset_path: ./u-boot.mbn
+    #     asset_name: u-boot.mbn
+    #     asset_content_type: application/octet-stream
