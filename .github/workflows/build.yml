@@ -11,7 +11,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Set up Python 2.7
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v2  # 使用 v2 版本
         with:
           python-version: '2.7'
 
@@ -22,6 +22,9 @@ jobs:
         run: |
           chmod +x build.sh
           ./build.sh
+
+      - name: Check if binary exists  # 检查生成的文件
+        run: ls -lh u-boot.mbn
 
       - name: Upload binary as artifact
         uses: actions/upload-artifact@v3
@@ -37,13 +40,14 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: uboot-binary
+          path: ./  # 下载到当前目录
 
       - name: Create Release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: 'v1.0.0'  # 可以根据需要自动生成 tag
+          tag_name: 'v1.0.${{ github.run_number }}'  # 自动生成 tag
           release_name: 'U-Boot IPQ60XX Build'
           body: 'This is the latest U-Boot binary for IPQ60XX.'
           draft: false
