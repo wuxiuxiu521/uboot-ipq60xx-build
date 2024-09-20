@@ -29,56 +29,44 @@ jobs:
       run: |
         ./build.sh
 
-    # - name: 查看编译目录内容
-    #   working-directory: ./uboot
-    #   run: |
-    #     # find . -name "u-boot.*"
-    #     find . -name "u-boot.bin"
-    #     find . -name "u-boot.mbn"
-    #     ls -l
+    - name: 查看编译输出
+      working-directory: ./uboot
+      run: |
+        ls -l ./u-boot-2016/
 
-    # 动态生成当前日期时间作为 Release 的标签和名称
-    # - name: 设置 Release 标签和名称
-    #   id: set_tag_name
-    #   run: |
-    #     TAG_NAME=$(date +"%Y.%m.%d-%H.%M")  # 修改为合法的 Git 标签格式
-    #     echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
-    #     echo "RELEASE_NAME=AX1800Pro-Uboot $TAG_NAME" >> $GITHUB_ENV
     - name: 设置 Release 标签和名称
       run: |
         TAG_NAME=$(date +"%Y.%m.%d-%H.%M")  # 生成合法的 Git 标签格式
         echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
         echo "RELEASE_NAME=AX1800Pro-Uboot $TAG_NAME" >> $GITHUB_ENV
 
-    # 1. 创建 Release
     - name: 创建 Release
       id: create_release
-      uses: actions/create-release@v1
+      uses: actions/create-release@v1  # 确保使用最新版本
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ env.TAG_NAME }}           # 使用动态生成的标签名称
-        release_name: ${{ env.RELEASE_NAME }}   # 使用动态生成的 Release 名称
-        draft: false                             # 如果你希望手动发布，将其改为 true
+        tag_name: ${{ env.TAG_NAME }}
+        release_name: ${{ env.RELEASE_NAME }}
+        draft: false
         prerelease: false
 
-    # 2. 上传编译好的文件到 Release
     - name: 上传固件到 Release
-      uses: actions/upload-release-asset@v1
+      uses: actions/upload-release-asset@v1  # 确保使用最新版本
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./uboot/u-boot-2016/u-boot.bin  # 一定要用绝对路径
+        asset_path: ./uboot/u-boot-2016/u-boot.bin  # 确保路径正确 使用绝对路径
         asset_name: u-boot.bin
         asset_content_type: application/octet-stream
 
     - name: 上传 MBN 文件到 Release
-      uses: actions/upload-release-asset@v1
+      uses: actions/upload-release-asset@v1  # 确保使用最新版本 使用绝对路径
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./uboot/u-boot.mbn  # 一定要用绝对路径
+        asset_path: ./uboot/u-boot.mbn  # 确保路径正确
         asset_name: u-boot.mbn
         asset_content_type: application/octet-stream
