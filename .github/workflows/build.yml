@@ -29,13 +29,13 @@ jobs:
       run: |
         ./build.sh
 
-    - name: 查看编译目录内容
-      working-directory: ./uboot
-      run: |
-        # find . -name "u-boot.*"
-        find . -name "u-boot.bin"
-        find . -name "u-boot.mbn"
-        ls -l
+    # - name: 查看编译目录内容
+    #   working-directory: ./uboot
+    #   run: |
+    #     # find . -name "u-boot.*"
+    #     find . -name "u-boot.bin"
+    #     find . -name "u-boot.mbn"
+    #     ls -l
 
     # 动态生成当前日期时间作为 Release 的标签和名称
     - name: 设置 Release 标签和名称
@@ -64,7 +64,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./uboot/u-boot-2016/u-boot.bin
+        asset_path: ./uboot/u-boot-2016/u-boot.bin  # 一定要用绝对路径
         asset_name: u-boot.bin
         asset_content_type: application/octet-stream
 
@@ -74,6 +74,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./uboot/u-boot.mbn  # 确保路径正确
+        asset_path: ./uboot/u-boot.mbn  # 一定要用绝对路径
         asset_name: u-boot.mbn
         asset_content_type: application/octet-stream
