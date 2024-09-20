@@ -1,62 +1,68 @@
-name: Build U-Boot for IPQ60XX
+name: 编译 AX1800Pro-Uboot
 
 on:
-  workflow_dispatch:  # 手动触发工作流
+  repository_dispatch:
+  workflow_dispatch:
 
 jobs:
   build:
-    runs-on: ubuntu-18.04
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Set up Python 2.7
-        uses: actions/setup-python@v2  # 使用 v2 版本
-        with:
-          python-version: '2.7'
-
-      - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y git python build-essential device-tree-compiler
-
-      - name: Build U-Boot
-        run: |
-          chmod +x build.sh
-          ./build.sh
-
-      - name: Check if binary exists  # 检查生成的文件
-        run: ls -lh u-boot.mbn
-
-      - name: Upload binary as artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: uboot-binary
-          path: u-boot.mbn  # 替换为生成的二进制文件路径
-
-  release:
-    needs: build
     runs-on: ubuntu-latest
+
     steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: uboot-binary
-          path: ./  # 下载到当前目录
+    - name: 检出代码
+      uses: actions/checkout@v2
 
-      - name: Create Release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: 'v1.0.${{ github.run_number }}'  # 自动生成 tag
-          release_name: 'U-Boot IPQ60XX Build'
-          body: 'This is the latest U-Boot binary for IPQ60XX.'
-          draft: false
-          prerelease: false
+    - name: 初始化环境
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y git python2.7 build-essential device-tree-compiler
+        sudo ln -sf /usr/bin/python2.7 /usr/bin/python
+        python --version
 
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: u-boot.mbn  # 替换为生成的二进制文件路径
-          asset_name: u-boot.mbn
-          asset_content_type: application/octet-stream
+    - name: 下载源码并切换到正确分支
+      run: |
+        git clone https://github.com/wuxiuxiu521/uboot-ipq60xx-build -b master uboot
+        cd uboot
+
+    - name: 编译 UBoot
+      working-directory: ./uboot
+      run: |
+        ./build.sh
+
+    - name: 查看编译目录内容
+      working-directory: ./uboot
+      run: |
+        find . -name "u-boot.*"
+
+    # 1. 创建 Release（如果已有 Release，可以省略此步骤）
+    - name: 创建 Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: "v1.0.0"      # 修改成你希望的版本号
+        release_name: "AX1800Pro-Uboot v1.0.0"
+        draft: false             # 如果你希望手动发布，将其改为 true
+        prerelease: false
+
+    # 2. 上传编译好的文件到 Release
+    - name: 上传固件到 Release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./uboot/u-boot.bin
+        asset_name: u-boot.bin
+        asset_content_type: application/octet-stream
+
+    - name: 上传 MBN 文件到 Release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./uboot/u-boot.mbn
+        asset_name: u-boot.mbn
+        asset_content_type: application/octet-stream
