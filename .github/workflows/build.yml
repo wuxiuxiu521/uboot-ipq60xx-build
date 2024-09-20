@@ -9,8 +9,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: 检出代码
-      uses: actions/checkout@v2
+    # - name: 检出代码
+    #   uses: actions/checkout@v2
 
     - name: 初始化环境
       run: |
@@ -37,7 +37,7 @@ jobs:
 
     - name: 创建 Release
       id: create_release
-      uses: actions/create-release@v1  # 使用 v1
+      uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
@@ -47,7 +47,7 @@ jobs:
         prerelease: false
 
     - name: 上传固件到 Release
-      uses: actions/upload-release-asset@v1  # 使用 v1
+      uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
@@ -57,7 +57,7 @@ jobs:
         asset_content_type: application/octet-stream
 
     - name: 上传 MBN 文件到 Release
-      uses: actions/upload-release-asset@v1  # 使用 v1
+      uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
