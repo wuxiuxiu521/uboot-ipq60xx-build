@@ -35,7 +35,7 @@ jobs:
         # find . -name "u-boot.*"
         find . -name "u-boot.bin"
         find . -name "u-boot.mbn"
-        ll
+        ls -l
 
     # 动态生成当前日期时间作为 Release 的标签和名称
     - name: 设置 Release 标签和名称
