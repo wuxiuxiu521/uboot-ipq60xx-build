@@ -42,7 +42,7 @@ jobs:
 
     - name: 创建 Release
       id: create_release
-      uses: actions/create-release@v1  # 确保使用最新版本
+      uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
@@ -52,17 +52,17 @@ jobs:
         prerelease: false
 
     - name: 上传固件到 Release
-      uses: actions/upload-release-asset@v1  # 确保使用最新版本
+      uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./uboot/u-boot-2016/u-boot.bin  # 确保路径正确 使用绝对路径
+        asset_path: ./uboot/u-boot-2016/u-boot.bin  # 确保路径正确
         asset_name: u-boot.bin
         asset_content_type: application/octet-stream
 
     - name: 上传 MBN 文件到 Release
-      uses: actions/upload-release-asset@v1  # 确保使用最新版本 使用绝对路径
+      uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
