@@ -21,7 +21,7 @@ jobs:
 
     - name: 下载源码并切换到正确分支
       run: |
-        git clone https://github.com/wuxiuxiu521/uboot-ipq60xx-build -b main uboot
+        git clone https://github.com/wuxiuxiu521/uboot-ipq60xx-build -b master uboot
         cd uboot
 
     - name: 编译 UBoot
