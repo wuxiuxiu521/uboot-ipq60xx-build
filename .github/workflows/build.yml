@@ -21,7 +21,7 @@ jobs:
 
     - name: 下载源码并切换到正确分支
       run: |
-        git clone https://github.com/wuxiuxiu521/uboot-ipq60xx-build -b master uboot
+        git clone https://github.com/wuxiuxiu521/uboot-ipq60xx-build -b main uboot
         cd uboot
 
     - name: 编译 UBoot
@@ -34,6 +34,14 @@ jobs:
       run: |
         find . -name "u-boot.*"
 
+    # 动态生成当前日期时间作为 Release 的标签和名称
+    - name: 设置 Release 标签和名称
+      id: set_tag_name
+      run: |
+        TAG_NAME=$(date +"%Y.%m.%d-%H.%M")  # 修改为合法的 Git 标签格式
+        echo "tag_name=$TAG_NAME" >> $GITHUB_ENV
+        echo "release_name=AX1800Pro-Uboot $TAG_NAME" >> $GITHUB_ENV
+
     # 1. 创建 Release（如果已有 Release，可以省略此步骤）
     - name: 创建 Release
       id: create_release
@@ -41,9 +49,9 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: "v1.0.0"      # 修改成你希望的版本号
-        release_name: "AX1800Pro-Uboot v1.0.0"
-        draft: false             # 如果你希望手动发布，将其改为 true
+        tag_name: ${{ env.tag_name }}           # 使用动态生成的标签名称
+        release_name: ${{ env.release_name }}   # 使用动态生成的 Release 名称
+        draft: false                            # 如果你希望手动发布，将其改为 true
         prerelease: false
 
     # 2. 上传编译好的文件到 Release
