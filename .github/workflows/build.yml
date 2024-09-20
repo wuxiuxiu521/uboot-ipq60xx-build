@@ -1,0 +1,58 @@
+name: Build U-Boot for IPQ60XX
+
+on:
+  workflow_dispatch:  # 手动触发工作流
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python 2.7
+        uses: actions/setup-python@v4
+        with:
+          python-version: '2.7'
+
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y git python build-essential device-tree-compiler
+
+      - name: Build U-Boot
+        run: |
+          chmod +x build.sh
+          ./build.sh
+
+      - name: Upload binary as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: uboot-binary
+          path: u-boot.mbn  # 替换为生成的二进制文件路径
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: uboot-binary
+
+      - name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: 'v1.0.0'  # 可以根据需要自动生成 tag
+          release_name: 'U-Boot IPQ60XX Build'
+          body: 'This is the latest U-Boot binary for IPQ60XX.'
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: u-boot.mbn  # 替换为生成的二进制文件路径
+          asset_name: u-boot.mbn
+          asset_content_type: application/octet-stream
