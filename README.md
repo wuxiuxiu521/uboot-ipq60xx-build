@@ -21,3 +21,5 @@ cd uboot-ipq60xx-build/
 The uboot binary will be: uboot-ipq60xx-build/u-boot.mbn
 
 The uboot failsafe HTTP server ip: 192.168.1.1
+
+u-boot-2016/include/configs/pcm052.h
