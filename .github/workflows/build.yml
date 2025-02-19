@@ -1,4 +1,4 @@
-name: 编译 AX1800Pro-Uboot
+name: 编译 AX1800Pro-AX6600-Uboot
 
 on:
   repository_dispatch:
@@ -12,6 +12,32 @@ jobs:
     # - name: 检出代码
     #   uses: actions/checkout@v2
 
+    - name: Free Disk Space(清理磁盘空间)
+        uses: endersonmenezes/free-disk-space@main
+        with:
+          testing: false
+          remove_android: true
+          remove_dotnet: true
+          remove_haskell: true
+          remove_tool_cache: true
+          remove_swap: true
+          remove_packages: "android* azure* clang* dotnet* firefox* ghc* golang* google* libclang* libgl1* lld* llvm* \
+            microsoft* mongodb* mono* mysql* nodejs* openjdk* php* postgresql* powershell* snap* temurin* yarn* zulu*"
+          remove_packages_one_command: true
+          remove_folders: "/etc/apt/sources.list.d* /etc/mono* /etc/mysql* /usr/include/linux/android* /usr/lib/llvm* /usr/lib/mono* \
+            /usr/local/lib/android* /usr/local/lib/node_modules* /usr/local/share/chromium* /usr/local/share/powershell* \
+            /usr/local/share/vcpkg/ports/azure* /usr/local/share/vcpkg/ports/google* /usr/local/share/vcpkg/ports/libpq/android* \
+            /usr/local/share/vcpkg/ports/llvm* /usr/local/share/vcpkg/ports/mysql* /usr/local/share/vcpkg/ports/snap* \
+            /usr/share/azure* /usr/share/dotnet* /usr/share/glade* /usr/share/miniconda* /usr/share/php* /usr/share/swift \
+            /var/lib/mysql* /var/log/azure*"
+
+    - name: Combine Disks(合并磁盘)
+        uses: easimon/maximize-build-space@master
+        with:
+          swap-size-mb: 2048
+          temp-reserve-mb: 100
+          root-reserve-mb: 2048
+
     - name: 初始化环境
       run: |
         sudo apt-get update
@@ -19,21 +45,26 @@ jobs:
         sudo ln -sf /usr/bin/python2.7 /usr/bin/python
         python --version
 
+        echo "OPENWRT_PATH=$PWD" >> $GITHUB_ENV
+
     - name: 下载源码并切换到正确分支
       run: |
+        cd $OPENWRT_PATH
+
         git clone https://github.com/wuxiuxiu521/uboot-ipq60xx-build -b master uboot
         cd uboot
 
     - name: 编译 UBoot
       working-directory: ./uboot
       run: |
+        cd $OPENWRT_PATH
         ./build.sh
 
     - name: 设置 Release 标签和名称
       run: |
         TAG_NAME=$(date +"%Y.%m.%d-%H.%M")
         echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
-        echo "RELEASE_NAME=AX1800Pro-Uboot $TAG_NAME" >> $GITHUB_ENV
+        echo "RELEASE_NAME=AX1800Pro-AX6600-Uboot $TAG_NAME" >> $GITHUB_ENV
 
     - name: 创建 Release
       id: create_release
@@ -52,7 +83,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./uboot/u-boot-2016/u-boot.bin
+        asset_path: ${{ env.OPENWRT_PATH }}/uboot/u-boot-2016/u-boot.bin
         asset_name: u-boot.bin
         asset_content_type: application/octet-stream
 
@@ -62,6 +93,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./uboot/u-boot.mbn
+        asset_path: ${{ env.OPENWRT_PATH }}/uboot/u-boot.mbn
         asset_name: u-boot.mbn
         asset_content_type: application/octet-stream
