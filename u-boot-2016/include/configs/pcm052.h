@@ -65,7 +65,7 @@
 					",128k(env1)"\
 					",128k(env2)"\
 					",128k(dtb)"\
-					",8192k(kernel)"\
+					",6144k(kernel)"\
 					",65536k(ramdisk)"\
 					",450944k(root)"
 #endif
